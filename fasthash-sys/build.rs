@@ -98,6 +98,7 @@ fn generate_binding(out_file: &Path) {
         .clang_args(&[
             "-Dt1ha_EXPORTS",
             "-DXXH_STATIC_LINKING_ONLY",
+            "-DXXH_NAMESPACE=FASTHASH_",
             "-Isrc/highwayhash",
         ])
         .clang_args(if support_aesni() {
@@ -129,7 +130,7 @@ fn generate_binding(out_file: &Path) {
         .whitelist_function("^SpookyHasher.*")
         .whitelist_function("^t1ha.*")
         .blacklist_function("^t1ha_selfcheck__.*")
-        .whitelist_function("^XXH.*")
+        .whitelist_function("^FASTHASH_XXH.*")
         .whitelist_function("^HighwayHash.*")
         .generate()
         .unwrap()
@@ -147,6 +148,7 @@ fn build_fasthash() {
 
     build
         .cpp(true)
+        .define("XXH_NAMESPACE", "FASTHASH_")
         .flag("-std=c++11")
         .flag("-Wno-implicit-fallthrough")
         .flag("-Wno-unknown-attributes")
