@@ -23,8 +23,12 @@ gen = ["bindgen"]
 [dependencies]
 cfg-if = "0.1"
 
-[build-dependencies]
+[target.'cfg(any(target_arch = "x86", target_arch = "x86_64"))'.build-dependencies]
 lazy_static = "1.4"
 raw-cpuid = "6"
+cc = "1.0"
+bindgen = { version="0.51", optional=true }
+
+[target.'cfg(not(any(target_arch = "x86", target_arch = "x86_64")))'.build-dependencies]
 cc = "1.0"
 bindgen = { version="0.51", optional=true }

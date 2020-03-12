@@ -1,66 +1,92 @@
 use std::env;
 use std::path::Path;
 
-use lazy_static::lazy_static;
-use raw_cpuid::CpuId;
+#[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
+mod port {
+    use lazy_static::lazy_static;
+    use raw_cpuid::CpuId;
 
-lazy_static! {
-    static ref CPUID: CpuId = CpuId::new();
+    lazy_static! {
+        static ref CPUID: CpuId = CpuId::new();
+    }
+
+    pub fn has_aesni() -> bool {
+        cfg!(feature = "native")
+            && CPUID
+                .get_feature_info()
+                .map_or(false, |features| features.has_aesni())
+    }
+
+    pub fn has_sse41() -> bool {
+        cfg!(feature = "native")
+            && CPUID
+                .get_feature_info()
+                .map_or(false, |features| features.has_sse41())
+    }
+
+    pub fn has_sse42() -> bool {
+        cfg!(feature = "native")
+            && CPUID
+                .get_feature_info()
+                .map_or(false, |features| features.has_sse42())
+    }
+
+    pub fn has_avx() -> bool {
+        cfg!(feature = "native")
+            && CPUID
+                .get_feature_info()
+                .map_or(false, |features| features.has_avx())
+    }
+
+    pub fn has_avx2() -> bool {
+        cfg!(feature = "native")
+            && CPUID
+                .get_extended_feature_info()
+                .map_or(false, |features| features.has_avx2())
+    }
 }
 
-fn has_aesni() -> bool {
-    cfg!(feature = "native")
-        && CPUID
-            .get_feature_info()
-            .map_or(false, |features| features.has_aesni())
-}
+#[cfg(not(any(target_arch = "x86", target_arch = "x86_64")))]
+mod port {
+    pub fn has_aesni() -> bool {
+        false
+    }
 
-fn has_sse41() -> bool {
-    cfg!(feature = "native")
-        && CPUID
-            .get_feature_info()
-            .map_or(false, |features| features.has_sse41())
-}
+    pub fn has_sse41() -> bool {
+        false
+    }
 
-fn has_sse42() -> bool {
-    cfg!(feature = "native")
-        && CPUID
-            .get_feature_info()
-            .map_or(false, |features| features.has_sse42())
-}
+    pub fn has_sse42() -> bool {
+        false
+    }
 
-fn has_avx() -> bool {
-    cfg!(feature = "native")
-        && CPUID
-            .get_feature_info()
-            .map_or(false, |features| features.has_avx())
-}
+    pub fn has_avx() -> bool {
+        false
+    }
 
-fn has_avx2() -> bool {
-    cfg!(feature = "native")
-        && CPUID
-            .get_extended_feature_info()
-            .map_or(false, |features| features.has_avx2())
+    pub fn has_avx2() -> bool {
+        false
+    }
 }
 
 fn support_aesni() -> bool {
-    cfg!(any(feature = "aes", target_feature = "aes")) || has_aesni()
+    cfg!(any(feature = "aes", target_feature = "aes")) || port::has_aesni()
 }
 
 fn support_sse41() -> bool {
-    cfg!(any(feature = "sse41", target_feature = "sse41")) || has_sse41()
+    cfg!(any(feature = "sse41", target_feature = "sse41")) || port::has_sse41()
 }
 
 fn support_sse42() -> bool {
-    cfg!(any(feature = "sse42", target_feature = "sse42")) || has_sse42()
+    cfg!(any(feature = "sse42", target_feature = "sse42")) || port::has_sse42()
 }
 
 fn support_avx() -> bool {
-    cfg!(any(feature = "avx", target_feature = "avx")) || has_avx()
+    cfg!(any(feature = "avx", target_feature = "avx")) || port::has_avx()
 }
 
 fn support_avx2() -> bool {
-    cfg!(any(feature = "avx2", target_feature = "avx2")) || has_avx2()
+    cfg!(any(feature = "avx2", target_feature = "avx2")) || port::has_avx2()
 }
 
 #[cfg(feature = "gen")]
@@ -208,19 +234,19 @@ fn build_highway() {
 }
 
 fn main() {
-    if has_aesni() {
+    if port::has_aesni() {
         println!(r#"cargo:rustc-cfg=feature="aes""#);
     }
-    if has_sse41() {
+    if port::has_sse41() {
         println!(r#"cargo:rustc-cfg=feature="sse41""#);
     }
-    if has_sse42() {
+    if port::has_sse42() {
         println!(r#"cargo:rustc-cfg=feature="sse42""#);
     }
-    if has_avx() {
+    if port::has_avx() {
         println!(r#"cargo:rustc-cfg=feature="avx""#);
     }
-    if has_avx2() {
+    if port::has_avx2() {
         println!(r#"cargo:rustc-cfg=feature="avx2""#);
     }
 

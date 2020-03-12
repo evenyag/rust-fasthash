@@ -121,6 +121,7 @@
 //! ```
 //!
 use std::mem;
+use std::os::raw::c_char;
 
 use crate::ffi;
 
@@ -148,7 +149,7 @@ impl FastHash for Hash32 {
     fn hash_with_seed<T: AsRef<[u8]>>(bytes: T, seed: u32) -> u32 {
         unsafe {
             ffi::CityHash32WithSeed(
-                bytes.as_ref().as_ptr() as *const i8,
+                bytes.as_ref().as_ptr() as *const c_char,
                 bytes.as_ref().len(),
                 seed,
             )
@@ -203,7 +204,7 @@ impl Hash64 {
     pub fn hash_with_seeds<T: AsRef<[u8]>>(bytes: T, seed0: u64, seed1: u64) -> u64 {
         unsafe {
             ffi::CityHash64WithSeeds(
-                bytes.as_ref().as_ptr() as *const i8,
+                bytes.as_ref().as_ptr() as *const c_char,
                 bytes.as_ref().len(),
                 seed0,
                 seed1,
@@ -218,7 +219,12 @@ impl FastHash for Hash64 {
 
     #[inline(always)]
     fn hash<T: AsRef<[u8]>>(bytes: T) -> u64 {
-        unsafe { ffi::CityHash64(bytes.as_ref().as_ptr() as *const i8, bytes.as_ref().len()) }
+        unsafe {
+            ffi::CityHash64(
+                bytes.as_ref().as_ptr() as *const c_char,
+                bytes.as_ref().len(),
+            )
+        }
     }
 
     /// Hash functions for a byte array.
@@ -227,7 +233,7 @@ impl FastHash for Hash64 {
     fn hash_with_seed<T: AsRef<[u8]>>(bytes: T, seed: u64) -> u64 {
         unsafe {
             ffi::CityHash64WithSeed(
-                bytes.as_ref().as_ptr() as *const i8,
+                bytes.as_ref().as_ptr() as *const c_char,
                 bytes.as_ref().len(),
                 seed,
             )
@@ -285,7 +291,7 @@ impl FastHash for Hash128 {
     fn hash<T: AsRef<[u8]>>(bytes: T) -> u128 {
         unsafe {
             mem::transmute(ffi::CityHash128(
-                bytes.as_ref().as_ptr() as *const i8,
+                bytes.as_ref().as_ptr() as *const c_char,
                 bytes.as_ref().len(),
             ))
         }
@@ -295,7 +301,7 @@ impl FastHash for Hash128 {
     fn hash_with_seed<T: AsRef<[u8]>>(bytes: T, seed: u128) -> u128 {
         unsafe {
             mem::transmute(ffi::CityHash128WithSeed(
-                bytes.as_ref().as_ptr() as *const i8,
+                bytes.as_ref().as_ptr() as *const c_char,
                 bytes.as_ref().len(),
                 mem::transmute(seed),
             ))

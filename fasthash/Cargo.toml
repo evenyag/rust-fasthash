@@ -34,7 +34,7 @@ fasthash-sys = { version = "0.4", path = "../fasthash-sys" }
 [dev-dependencies]
 criterion = "0.3"
 
-[build-dependencies]
+[target.'cfg(any(target_arch = "x86", target_arch = "x86_64"))'.build-dependencies]
 raw-cpuid = "7"
 
 [[bench]]
