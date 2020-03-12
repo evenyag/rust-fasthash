@@ -517,16 +517,11 @@ pub const XXH_errorcode_XXH_OK: XXH_errorcode = 0;
 pub const XXH_errorcode_XXH_ERROR: XXH_errorcode = 1;
 pub type XXH_errorcode = u32;
 extern "C" {
-    pub fn XXH_versionNumber() -> ::std::os::raw::c_uint;
+    pub fn FASTHASH_XXH_versionNumber() -> ::std::os::raw::c_uint;
 }
 pub type XXH32_hash_t = u32;
 extern "C" {
-    #[doc = " XXH32() :"]
-    #[doc = "Calculate the 32-bit hash of sequence \"length\" bytes stored at memory address \"input\"."]
-    #[doc = "The memory between input & input+length must be valid (allocated and read-accessible)."]
-    #[doc = "\"seed\" can be used to alter the result predictably."]
-    #[doc = "Speed on Core 2 Duo @ 3 GHz (single thread, SMHasher benchmark) : 5.4 GB/s"]
-    pub fn XXH32(
+    pub fn FASTHASH_XXH32(
         input: *const ::std::os::raw::c_void,
         length: usize,
         seed: ::std::os::raw::c_uint,
@@ -534,27 +529,29 @@ extern "C" {
 }
 pub type XXH32_state_t = XXH32_state_s;
 extern "C" {
-    pub fn XXH32_createState() -> *mut XXH32_state_t;
+    pub fn FASTHASH_XXH32_createState() -> *mut XXH32_state_t;
 }
 extern "C" {
-    pub fn XXH32_freeState(statePtr: *mut XXH32_state_t) -> XXH_errorcode;
+    pub fn FASTHASH_XXH32_freeState(statePtr: *mut XXH32_state_t) -> XXH_errorcode;
 }
 extern "C" {
-    pub fn XXH32_copyState(dst_state: *mut XXH32_state_t, src_state: *const XXH32_state_t);
+    pub fn FASTHASH_XXH32_copyState(dst_state: *mut XXH32_state_t, src_state: *const XXH32_state_t);
 }
 extern "C" {
-    pub fn XXH32_reset(statePtr: *mut XXH32_state_t, seed: ::std::os::raw::c_uint)
-        -> XXH_errorcode;
+    pub fn FASTHASH_XXH32_reset(
+        statePtr: *mut XXH32_state_t,
+        seed: ::std::os::raw::c_uint,
+    ) -> XXH_errorcode;
 }
 extern "C" {
-    pub fn XXH32_update(
+    pub fn FASTHASH_XXH32_update(
         statePtr: *mut XXH32_state_t,
         input: *const ::std::os::raw::c_void,
         length: usize,
     ) -> XXH_errorcode;
 }
 extern "C" {
-    pub fn XXH32_digest(statePtr: *const XXH32_state_t) -> XXH32_hash_t;
+    pub fn FASTHASH_XXH32_digest(statePtr: *const XXH32_state_t) -> XXH32_hash_t;
 }
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
@@ -585,18 +582,14 @@ fn bindgen_test_layout_XXH32_canonical_t() {
     );
 }
 extern "C" {
-    pub fn XXH32_canonicalFromHash(dst: *mut XXH32_canonical_t, hash: XXH32_hash_t);
+    pub fn FASTHASH_XXH32_canonicalFromHash(dst: *mut XXH32_canonical_t, hash: XXH32_hash_t);
 }
 extern "C" {
-    pub fn XXH32_hashFromCanonical(src: *const XXH32_canonical_t) -> XXH32_hash_t;
+    pub fn FASTHASH_XXH32_hashFromCanonical(src: *const XXH32_canonical_t) -> XXH32_hash_t;
 }
 pub type XXH64_hash_t = u64;
 extern "C" {
-    #[doc = " XXH64() :"]
-    #[doc = "Calculate the 64-bit hash of sequence of length \"len\" stored at memory address \"input\"."]
-    #[doc = "\"seed\" can be used to alter the result predictably."]
-    #[doc = "This function runs faster on 64-bit systems, but slower on 32-bit systems (see benchmark)."]
-    pub fn XXH64(
+    pub fn FASTHASH_XXH64(
         input: *const ::std::os::raw::c_void,
         length: usize,
         seed: ::std::os::raw::c_ulonglong,
@@ -604,29 +597,29 @@ extern "C" {
 }
 pub type XXH64_state_t = XXH64_state_s;
 extern "C" {
-    pub fn XXH64_createState() -> *mut XXH64_state_t;
+    pub fn FASTHASH_XXH64_createState() -> *mut XXH64_state_t;
 }
 extern "C" {
-    pub fn XXH64_freeState(statePtr: *mut XXH64_state_t) -> XXH_errorcode;
+    pub fn FASTHASH_XXH64_freeState(statePtr: *mut XXH64_state_t) -> XXH_errorcode;
 }
 extern "C" {
-    pub fn XXH64_copyState(dst_state: *mut XXH64_state_t, src_state: *const XXH64_state_t);
+    pub fn FASTHASH_XXH64_copyState(dst_state: *mut XXH64_state_t, src_state: *const XXH64_state_t);
 }
 extern "C" {
-    pub fn XXH64_reset(
+    pub fn FASTHASH_XXH64_reset(
         statePtr: *mut XXH64_state_t,
         seed: ::std::os::raw::c_ulonglong,
     ) -> XXH_errorcode;
 }
 extern "C" {
-    pub fn XXH64_update(
+    pub fn FASTHASH_XXH64_update(
         statePtr: *mut XXH64_state_t,
         input: *const ::std::os::raw::c_void,
         length: usize,
     ) -> XXH_errorcode;
 }
 extern "C" {
-    pub fn XXH64_digest(statePtr: *const XXH64_state_t) -> XXH64_hash_t;
+    pub fn FASTHASH_XXH64_digest(statePtr: *const XXH64_state_t) -> XXH64_hash_t;
 }
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
@@ -657,10 +650,10 @@ fn bindgen_test_layout_XXH64_canonical_t() {
     );
 }
 extern "C" {
-    pub fn XXH64_canonicalFromHash(dst: *mut XXH64_canonical_t, hash: XXH64_hash_t);
+    pub fn FASTHASH_XXH64_canonicalFromHash(dst: *mut XXH64_canonical_t, hash: XXH64_hash_t);
 }
 extern "C" {
-    pub fn XXH64_hashFromCanonical(src: *const XXH64_canonical_t) -> XXH64_hash_t;
+    pub fn FASTHASH_XXH64_hashFromCanonical(src: *const XXH64_canonical_t) -> XXH64_hash_t;
 }
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
@@ -895,10 +888,10 @@ fn bindgen_test_layout_XXH64_state_s() {
     );
 }
 extern "C" {
-    pub fn XXH3_64bits(data: *const ::std::os::raw::c_void, len: usize) -> XXH64_hash_t;
+    pub fn FASTHASH_XXH3_64bits(data: *const ::std::os::raw::c_void, len: usize) -> XXH64_hash_t;
 }
 extern "C" {
-    pub fn XXH3_64bits_withSecret(
+    pub fn FASTHASH_XXH3_64bits_withSecret(
         data: *const ::std::os::raw::c_void,
         len: usize,
         secret: *const ::std::os::raw::c_void,
@@ -906,7 +899,7 @@ extern "C" {
     ) -> XXH64_hash_t;
 }
 extern "C" {
-    pub fn XXH3_64bits_withSeed(
+    pub fn FASTHASH_XXH3_64bits_withSeed(
         data: *const ::std::os::raw::c_void,
         len: usize,
         seed: XXH64_hash_t,
@@ -1076,39 +1069,39 @@ fn bindgen_test_layout_XXH3_state_s() {
     );
 }
 extern "C" {
-    pub fn XXH3_createState() -> *mut XXH3_state_t;
+    pub fn FASTHASH_XXH3_createState() -> *mut XXH3_state_t;
 }
 extern "C" {
-    pub fn XXH3_freeState(statePtr: *mut XXH3_state_t) -> XXH_errorcode;
+    pub fn FASTHASH_XXH3_freeState(statePtr: *mut XXH3_state_t) -> XXH_errorcode;
 }
 extern "C" {
-    pub fn XXH3_copyState(dst_state: *mut XXH3_state_t, src_state: *const XXH3_state_t);
+    pub fn FASTHASH_XXH3_copyState(dst_state: *mut XXH3_state_t, src_state: *const XXH3_state_t);
 }
 extern "C" {
-    pub fn XXH3_64bits_reset(statePtr: *mut XXH3_state_t) -> XXH_errorcode;
+    pub fn FASTHASH_XXH3_64bits_reset(statePtr: *mut XXH3_state_t) -> XXH_errorcode;
 }
 extern "C" {
-    pub fn XXH3_64bits_reset_withSeed(
+    pub fn FASTHASH_XXH3_64bits_reset_withSeed(
         statePtr: *mut XXH3_state_t,
         seed: XXH64_hash_t,
     ) -> XXH_errorcode;
 }
 extern "C" {
-    pub fn XXH3_64bits_reset_withSecret(
+    pub fn FASTHASH_XXH3_64bits_reset_withSecret(
         statePtr: *mut XXH3_state_t,
         secret: *const ::std::os::raw::c_void,
         secretSize: usize,
     ) -> XXH_errorcode;
 }
 extern "C" {
-    pub fn XXH3_64bits_update(
+    pub fn FASTHASH_XXH3_64bits_update(
         statePtr: *mut XXH3_state_t,
         input: *const ::std::os::raw::c_void,
         length: usize,
     ) -> XXH_errorcode;
 }
 extern "C" {
-    pub fn XXH3_64bits_digest(statePtr: *const XXH3_state_t) -> XXH64_hash_t;
+    pub fn FASTHASH_XXH3_64bits_digest(statePtr: *const XXH3_state_t) -> XXH64_hash_t;
 }
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
@@ -1150,24 +1143,24 @@ fn bindgen_test_layout_XXH128_hash_t() {
     );
 }
 extern "C" {
-    pub fn XXH128(
+    pub fn FASTHASH_XXH128(
         data: *const ::std::os::raw::c_void,
         len: usize,
         seed: XXH64_hash_t,
     ) -> XXH128_hash_t;
 }
 extern "C" {
-    pub fn XXH3_128bits(data: *const ::std::os::raw::c_void, len: usize) -> XXH128_hash_t;
+    pub fn FASTHASH_XXH3_128bits(data: *const ::std::os::raw::c_void, len: usize) -> XXH128_hash_t;
 }
 extern "C" {
-    pub fn XXH3_128bits_withSeed(
+    pub fn FASTHASH_XXH3_128bits_withSeed(
         data: *const ::std::os::raw::c_void,
         len: usize,
         seed: XXH64_hash_t,
     ) -> XXH128_hash_t;
 }
 extern "C" {
-    pub fn XXH3_128bits_withSecret(
+    pub fn FASTHASH_XXH3_128bits_withSecret(
         data: *const ::std::os::raw::c_void,
         len: usize,
         secret: *const ::std::os::raw::c_void,
@@ -1175,36 +1168,36 @@ extern "C" {
     ) -> XXH128_hash_t;
 }
 extern "C" {
-    pub fn XXH3_128bits_reset(statePtr: *mut XXH3_state_t) -> XXH_errorcode;
+    pub fn FASTHASH_XXH3_128bits_reset(statePtr: *mut XXH3_state_t) -> XXH_errorcode;
 }
 extern "C" {
-    pub fn XXH3_128bits_reset_withSeed(
+    pub fn FASTHASH_XXH3_128bits_reset_withSeed(
         statePtr: *mut XXH3_state_t,
         seed: XXH64_hash_t,
     ) -> XXH_errorcode;
 }
 extern "C" {
-    pub fn XXH3_128bits_reset_withSecret(
+    pub fn FASTHASH_XXH3_128bits_reset_withSecret(
         statePtr: *mut XXH3_state_t,
         secret: *const ::std::os::raw::c_void,
         secretSize: usize,
     ) -> XXH_errorcode;
 }
 extern "C" {
-    pub fn XXH3_128bits_update(
+    pub fn FASTHASH_XXH3_128bits_update(
         statePtr: *mut XXH3_state_t,
         input: *const ::std::os::raw::c_void,
         length: usize,
     ) -> XXH_errorcode;
 }
 extern "C" {
-    pub fn XXH3_128bits_digest(statePtr: *const XXH3_state_t) -> XXH128_hash_t;
+    pub fn FASTHASH_XXH3_128bits_digest(statePtr: *const XXH3_state_t) -> XXH128_hash_t;
 }
 extern "C" {
-    pub fn XXH128_isEqual(h1: XXH128_hash_t, h2: XXH128_hash_t) -> ::std::os::raw::c_int;
+    pub fn FASTHASH_XXH128_isEqual(h1: XXH128_hash_t, h2: XXH128_hash_t) -> ::std::os::raw::c_int;
 }
 extern "C" {
-    pub fn XXH128_cmp(
+    pub fn FASTHASH_XXH128_cmp(
         h128_1: *const ::std::os::raw::c_void,
         h128_2: *const ::std::os::raw::c_void,
     ) -> ::std::os::raw::c_int;
@@ -1238,10 +1231,10 @@ fn bindgen_test_layout_XXH128_canonical_t() {
     );
 }
 extern "C" {
-    pub fn XXH128_canonicalFromHash(dst: *mut XXH128_canonical_t, hash: XXH128_hash_t);
+    pub fn FASTHASH_XXH128_canonicalFromHash(dst: *mut XXH128_canonical_t, hash: XXH128_hash_t);
 }
 extern "C" {
-    pub fn XXH128_hashFromCanonical(src: *const XXH128_canonical_t) -> XXH128_hash_t;
+    pub fn FASTHASH_XXH128_hashFromCanonical(src: *const XXH128_canonical_t) -> XXH128_hash_t;
 }
 pub type HHKey = [u64; 4usize];
 pub type HHResult128 = [u64; 2usize];

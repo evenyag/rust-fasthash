@@ -99,14 +99,14 @@ impl FastHash for Hash64 {
     fn hash<T: AsRef<[u8]>>(bytes: T) -> Self::Hash {
         let bytes = bytes.as_ref();
 
-        unsafe { ffi::XXH3_64bits(bytes.as_ptr() as *const _, bytes.len()) }
+        unsafe { ffi::FASTHASH_XXH3_64bits(bytes.as_ptr() as *const _, bytes.len()) }
     }
 
     #[inline(always)]
     fn hash_with_seed<T: AsRef<[u8]>>(bytes: T, seed: Self::Seed) -> Self::Hash {
         let bytes = bytes.as_ref();
 
-        unsafe { ffi::XXH3_64bits_withSeed(bytes.as_ptr() as *const _, bytes.len(), seed) }
+        unsafe { ffi::FASTHASH_XXH3_64bits_withSeed(bytes.as_ptr() as *const _, bytes.len(), seed) }
     }
 }
 
@@ -131,16 +131,16 @@ pub struct Hasher64(NonNull<ffi::XXH3_state_t>);
 
 impl Default for Hasher64 {
     fn default() -> Self {
-        Hasher64(unsafe { NonNull::new_unchecked(ffi::XXH3_createState()) })
+        Hasher64(unsafe { NonNull::new_unchecked(ffi::FASTHASH_XXH3_createState()) })
     }
 }
 
 impl Clone for Hasher64 {
     fn clone(&self) -> Self {
         unsafe {
-            let state = ffi::XXH3_createState();
+            let state = ffi::FASTHASH_XXH3_createState();
 
-            ffi::XXH3_copyState(state, self.0.as_ptr());
+            ffi::FASTHASH_XXH3_copyState(state, self.0.as_ptr());
 
             Hasher64(NonNull::new_unchecked(state))
         }
@@ -150,7 +150,7 @@ impl Clone for Hasher64 {
 impl Drop for Hasher64 {
     fn drop(&mut self) {
         unsafe {
-            ffi::XXH3_freeState(self.0.as_ptr());
+            ffi::FASTHASH_XXH3_freeState(self.0.as_ptr());
         }
     }
 }
@@ -158,13 +158,17 @@ impl Drop for Hasher64 {
 impl Hasher for Hasher64 {
     #[inline(always)]
     fn finish(&self) -> u64 {
-        unsafe { ffi::XXH3_64bits_digest(self.0.as_ptr()) }
+        unsafe { ffi::FASTHASH_XXH3_64bits_digest(self.0.as_ptr()) }
     }
 
     #[inline(always)]
     fn write(&mut self, bytes: &[u8]) {
         unsafe {
-            ffi::XXH3_64bits_update(self.0.as_ptr(), bytes.as_ptr() as *const _, bytes.len());
+            ffi::FASTHASH_XXH3_64bits_update(
+                self.0.as_ptr(),
+                bytes.as_ptr() as *const _,
+                bytes.len(),
+            );
         }
     }
 }
@@ -176,9 +180,9 @@ impl FastHasher for Hasher64 {
     #[inline(always)]
     fn with_seed(seed: u64) -> Self {
         unsafe {
-            let state = ffi::XXH3_createState();
+            let state = ffi::FASTHASH_XXH3_createState();
 
-            ffi::XXH3_64bits_reset_withSeed(state, seed);
+            ffi::FASTHASH_XXH3_64bits_reset_withSeed(state, seed);
 
             Hasher64(NonNull::new_unchecked(state))
         }
@@ -218,7 +222,12 @@ impl FastHash for Hash128 {
     fn hash<T: AsRef<[u8]>>(bytes: T) -> Self::Hash {
         let bytes = bytes.as_ref();
 
-        unsafe { mem::transmute(ffi::XXH3_128bits(bytes.as_ptr() as *const _, bytes.len())) }
+        unsafe {
+            mem::transmute(ffi::FASTHASH_XXH3_128bits(
+                bytes.as_ptr() as *const _,
+                bytes.len(),
+            ))
+        }
     }
 
     #[inline(always)]
@@ -226,7 +235,7 @@ impl FastHash for Hash128 {
         let bytes = bytes.as_ref();
 
         unsafe {
-            mem::transmute(ffi::XXH3_128bits_withSeed(
+            mem::transmute(ffi::FASTHASH_XXH3_128bits_withSeed(
                 bytes.as_ptr() as *const _,
                 bytes.len(),
                 seed,
@@ -256,16 +265,16 @@ pub struct Hasher128(NonNull<ffi::XXH3_state_t>);
 
 impl Default for Hasher128 {
     fn default() -> Self {
-        Hasher128(unsafe { NonNull::new_unchecked(ffi::XXH3_createState()) })
+        Hasher128(unsafe { NonNull::new_unchecked(ffi::FASTHASH_XXH3_createState()) })
     }
 }
 
 impl Clone for Hasher128 {
     fn clone(&self) -> Self {
         unsafe {
-            let state = ffi::XXH3_createState();
+            let state = ffi::FASTHASH_XXH3_createState();
 
-            ffi::XXH3_copyState(state, self.0.as_ptr());
+            ffi::FASTHASH_XXH3_copyState(state, self.0.as_ptr());
 
             Hasher128(NonNull::new_unchecked(state))
         }
@@ -275,7 +284,7 @@ impl Clone for Hasher128 {
 impl Drop for Hasher128 {
     fn drop(&mut self) {
         unsafe {
-            ffi::XXH3_freeState(self.0.as_ptr());
+            ffi::FASTHASH_XXH3_freeState(self.0.as_ptr());
         }
     }
 }
@@ -283,13 +292,17 @@ impl Drop for Hasher128 {
 impl Hasher for Hasher128 {
     #[inline(always)]
     fn finish(&self) -> u64 {
-        unsafe { ffi::XXH3_128bits_digest(self.0.as_ptr()).low64 }
+        unsafe { ffi::FASTHASH_XXH3_128bits_digest(self.0.as_ptr()).low64 }
     }
 
     #[inline(always)]
     fn write(&mut self, bytes: &[u8]) {
         unsafe {
-            ffi::XXH3_128bits_update(self.0.as_ptr(), bytes.as_ptr() as *const _, bytes.len());
+            ffi::FASTHASH_XXH3_128bits_update(
+                self.0.as_ptr(),
+                bytes.as_ptr() as *const _,
+                bytes.len(),
+            );
         }
     }
 }
@@ -297,7 +310,7 @@ impl Hasher for Hasher128 {
 impl HasherExt for Hasher128 {
     #[inline(always)]
     fn finish_ext(&self) -> u128 {
-        let h = unsafe { ffi::XXH3_128bits_digest(self.0.as_ptr()) };
+        let h = unsafe { ffi::FASTHASH_XXH3_128bits_digest(self.0.as_ptr()) };
 
         u128::from(h.low64) + (u128::from(h.high64) << 64)
     }
@@ -310,9 +323,9 @@ impl FastHasher for Hasher128 {
     #[inline(always)]
     fn with_seed(seed: u64) -> Self {
         unsafe {
-            let state = ffi::XXH3_createState();
+            let state = ffi::FASTHASH_XXH3_createState();
 
-            ffi::XXH3_128bits_reset_withSeed(state, seed);
+            ffi::FASTHASH_XXH3_128bits_reset_withSeed(state, seed);
 
             Hasher128(NonNull::new_unchecked(state))
         }
